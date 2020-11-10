@@ -1,6 +1,6 @@
 //based on  code here: https://github.com/dwyl/learn-hapi
 //npm init -y && npm install hapi --save
-
+// npm install hapi-pino
 
 const Hapi = require('@hapi/hapi');
 async function start () {
@@ -19,7 +19,8 @@ async function start () {
     handler: async function (request, h) {
       // request.log is HAPI standard way of logging
       // you can also use a pino instance, which will be faster
-      request.logger.warn('In handler %s', request.path)
+      //request.logger.warn('In handler %s', request.path
+     request.log(['a', 'b'], 'Request into hello world')
 
       return 'hello world'
     }
@@ -29,7 +30,7 @@ async function start () {
      method: 'GET',
      path: '/hello/{name}',
      handler: async function(request, h) {
-	 request.logger.info('In handler ', request.path)
+	// request.logger.info('In handler ', request.path)
 	 return 'hello'+request.params.name
     }
  })
@@ -44,10 +45,14 @@ async function start () {
   })
 
   // also as a decorated API
-  //server.logger.info('another way for accessing it')
+  server.logger.info('another way for accessing it')
+     
+  const child = server.logger.child({a:'property'})
 
-  // and through Hapi standard logging system
-  //server.log(['subsystem'], 'third way for accessing it')
+    //and through Hapi standard logging system
+  server.log(['subsystem'], 'third way for accessing it')
+
+  child.info('foo')
 
   await server.start()
 
