@@ -19,7 +19,7 @@ async function start () {
     handler: async function (request, h) {
       // request.log is HAPI standard way of logging
       // you can also use a pino instance, which will be faster
-      //request.logger.warn('In handler %s', request.path
+     //request.logger.warn('In handler %s', request.path)
      request.log(['a', 'b'], 'Request into hello world')
 
       return 'hello world'
@@ -31,16 +31,30 @@ async function start () {
      path: '/hello/{name}',
      handler: async function(request, h) {
 	// request.logger.info('In handler ', request.path)
+	 logdata = [ { 'name': request.params.name}]
+	 request.log(logdata,'requesting hello')
 	 return 'hello'+request.params.name
     }
  })
 
+ server.route({ 
+     method: 'GET',
+     path: '/patient/{patientId}/{reportId}',
+     handler: async function(request,h) {
+	 logdata = [{'patientId': request.params.patientId, 'reportId': request.params.reportId}]
+	 request.log(logdata,'requesting patient')
+	 return 'requesting patient id.'  
+     }
+})
+
+
   await server.register({
     plugin: require('hapi-pino'),
     options: {
-      prettyPrint: process.env.NODE_ENV !== 'production',
+       ///return 
+      //prettyPrint: process.env.NODE_ENV !== 'production',
       // Redact Authorization headers, see https://getpino.io/#/docs/redaction
-      redact: ['req.headers.authorization']
+      redact: ['req.headers.authorization','req.headers']
     }
   })
 
